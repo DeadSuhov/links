@@ -3,6 +3,7 @@ require_once "UserRequestController.php";
 require_once "ShortUrlsController.php";
 require_once "ShortUrlController.php";
 require_once "RedirectController.php";
+require_once "StatsController.php";
 
 $requestMethod = $_SERVER['REQUEST_METHOD'];
 $requestUrl = $_SERVER['REQUEST_URI'];
@@ -46,6 +47,8 @@ if (!isset($_SERVER['PHP_AUTH_USER']) || !isset($_SERVER['PHP_AUTH_PW'])) {
 			if ($requestMethod == "GET") {
 				$controller = new UserRequestController($dbConnection, $userLogin, $userPassword);
 				$controller->processRequest("GET", $requestUrl);
+			} else {
+				http_response_code(501);
 			}
 			break;
 		};
@@ -53,6 +56,8 @@ if (!isset($_SERVER['PHP_AUTH_USER']) || !isset($_SERVER['PHP_AUTH_PW'])) {
 			if ($requestMethod == "GET" or $requestMethod == "POST") {
 				$controller = new ShortUrlsController($dbConnection, $userLogin, $userPassword);
 				$controller->processRequest($requestMethod, $requestUrl);
+			} else {
+				http_response_code(501);
 			}
 			break;
 		};
@@ -64,6 +69,19 @@ if (!isset($_SERVER['PHP_AUTH_USER']) || !isset($_SERVER['PHP_AUTH_PW'])) {
 				if ($requestMethod == "GET" || $requestMethod == "DELETE") {
 					$controller = new ShortUrlController($dbConnection, $userLogin, $userPassword);
 					$controller->processRequest($requestMethod, $linkId);
+				} else {
+					http_response_code(501);
+				}
+			} else if (preg_match('[^/api/v1/users/me/shorten_urls/(\d+)/(days|hours|min)\?from_date=(\d{4}-\d{2}-\d{2})&to_date=(\d{4}-\d{2}-\d{2})$]', $requestUrl, $matches)) {
+				$request = [
+					"link" => $matches[1],
+					"interval" => $matches[2],
+					"fromDate" => $matches[3],
+					"toDate" => $matches[4]
+					];
+				if ($requestMethod == "GET") {
+					$controller = new StatsController($dbConnection, $userLogin, $userPassword);
+					$controller->processRequest("GET", $request);
 				} else {
 					http_response_code(501);
 				}

@@ -1,4 +1,7 @@
 <?php
+require_once "DbException.php";
+require_once "LinkNotFoundException.php";
+
 /**
  * Класс описывает хранилище ссылок и предоставляет интерфейс для работы с ним.
  *
@@ -70,7 +73,7 @@ class LinksStore {
 		$query = "insert into {$this->linksTableName} (link) values (\"{$encodedLink}\")";
 		$queryResult = $this->dbConnection->query($query);
 		if ($queryResult !== TRUE) {
-			return (-$this->dbConnection->errno);
+			throw new DbException($this->dbConnection->error, $this->dbConnection->errno);
 		} else {
 			return $this->dbConnection->insert_id;
 		}

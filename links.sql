@@ -24,7 +24,7 @@ DROP TABLE IF EXISTS `History`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `History` (
   `link` int(11) NOT NULL,
-  `date` date NOT NULL,
+  `date` datetime DEFAULT NULL,
   `referer` text,
   KEY `link` (`link`),
   CONSTRAINT `History_ibfk_1` FOREIGN KEY (`link`) REFERENCES `Links` (`id`) ON DELETE CASCADE
@@ -51,7 +51,7 @@ CREATE TABLE `Links` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `link` text NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -102,7 +102,7 @@ CREATE TABLE `Users` (
   `password` varchar(64) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `login` (`login`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -123,4 +123,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-11-21  6:13:45
+-- Dump completed on 2017-11-21 22:51:13

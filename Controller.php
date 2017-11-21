@@ -18,7 +18,7 @@ class Controller {
 		$this->dbConnection = $dbConnection;
 		$this->linkStore = new LinksStore($this->dbConnection, $this->tables["links"]);
 		$this->userStore = new UserStore($this->dbConnection, $this->tables["users"]);
-		$this->linkManager = new LinkManager($this->dbConnection, $this->userLogin, $this->tables["userLinks"], $this->linkStore, $this->user, $this->tables["history"]);
+		$this->linkManager = new LinkManager($this->dbConnection, $this->userLogin, $this->tables["userLinks"], $this->linkStore, $this->userStore, $this->tables["history"]);
 	}
 
 	public function processRequest($method, $url) {

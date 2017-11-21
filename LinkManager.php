@@ -53,7 +53,7 @@ class LinkManager {
 		$this->dbConnection->autocommit(FALSE);
 		$this->dbConnection->begin_transaction();
 		$longLinkId = $this->linkStore->addLink($longLink);
-		$userId = $this->userStore->getIdByLogin($this->user);
+		$userId = $this->userStore->getIdByLogin($this->userLogin);
 		$query = "insert into {$this->userLinksTableName} (user, link) values (\"{$userId}\",\"{$longLinkId}\")";
 		$queryResult = $this->dbConnection->query($query);
 		if ($queryResult !== TRUE) {
@@ -69,7 +69,7 @@ class LinkManager {
 	
 	// Функция которая выдает все короткие ссылки пользователю по его UsersId
 	public function getUserLinks() {
-		$userId = $this->userStore->getIdByLogin($this->user);
+		$userId = $this->userStore->getIdByLogin($this->userLogin);
 		$query = "select link from {$this->userLinksTableName} where user =\"{$userId}\"";
 		$queryResult = $this->dbConnection->query($query);
 		$arrLink = [];
@@ -114,7 +114,7 @@ class LinkManager {
 	 * referer string
 	 * ```
 	 */
-	public function dateReport($linkId, $dateRangeType, $fromDate, $toDate) {
+	public function getReport($linkId, $dateRangeType, $fromDate, $toDate) {
 		$dateFormat = "";
 		$result = [];
 		if ($dateRangeType == "days") {
@@ -122,24 +122,24 @@ class LinkManager {
 		} else if ($dateRangeType == "hours") {
 			$dateFormat = "%Y-%m-%d %H";
 		} else if ($dateRangeType == "min") {
-			$dateFormat = "%Y-%m-%d %H:%M";
+			$dateFormat = "%Y-%m-%d %H:%i";
 		} else {
 			throw new UnknownTimeRangeException($dateRangeType);
 		}
 		
-		$query = "select date_format(date, \"{$dateFormat}\") as aggregatedDate, count(*) as count from {$this->historyTableName} where link = \"{$linkId}\" and date > \"{$fromDate}\" and date < \"{$toDate}\" group by aggregatedDate";
-		$qeuryResult = $this->dbConnection->query($query);
+		$query = "select date_format(date, \"{$dateFormat}\") as aggregatedDate, count(*) as count from {$this->historyTableName} where link = \"{$linkId}\" and date >= \"{$fromDate}\" and date < \"{$toDate}\" group by aggregatedDate";
+		$queryResult = $this->dbConnection->query($query);
 		if ($queryResult === FALSE) {
 			throw new DbException($this->dbConnection->error, $this->dbConnection->errno);
 		} else {
-			while ($sqlResultRow = $queryResult->fetchRow()) {
+			while ($sqlResultRow = $queryResult->fetch_row()) {
 				$resultRow = [];
 				$resultRow["date"] = $sqlResultRow[0];
 				$resultRow["count"] = $sqlResultRow[1];
 				$result[] = $resultRow;
 			}
 		}
-		return result;
+		return $result;
 	}
 	
 	// 3. GET /api/v1/users/me/shorten_urls/{id}/referers - получение топа из 20 сайтов иcточников переходов

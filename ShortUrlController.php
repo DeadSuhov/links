@@ -2,6 +2,7 @@
 require_once "Controller.php";
 require_once "DbException.php";
 require_once "UserNotFoundException.php";
+require_once "LinkNotFoundException.php";
 
 class ShortUrlController extends Controller {
 	protected function processRequestGet($linkId) {
@@ -10,6 +11,8 @@ class ShortUrlController extends Controller {
 			echo json_encode($linkInfo);
 		} catch (DbException $e) {
 			http_response_code(500);
+		} catch (LinkNotFoundException $e) {
+			http_response_code(404);
 		}
 	}
 

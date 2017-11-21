@@ -19,8 +19,9 @@ class ShortUrlsController extends Controller {
 		$requestData = json_decode($data, true);
 		$longLink = $requestData['link'];
 		try {
-			$shortLinkId = $linksId = $this->linkManager->addShortLink($longLink);
+			$shortLinkId = $this->linkManager->addShortLink($longLink);
 			$response = [ "id" => $shortLinkId ];
+			http_response_code(201);
 			echo json_encode($response);
 		} catch (DbException $e) {
 			http_response_code(500);
